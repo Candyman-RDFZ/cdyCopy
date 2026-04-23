@@ -37,7 +37,7 @@ class App(TkinterDnD.Tk):
         self.style.theme_use('vista' if ONWIN else 'clam')
         self.style.configure('SRC.TButton', font=('Arial', 15))
         self.style.configure('SRC.TCheckbutton', font=('Arial', 12))
-        self.style.configure('SRC.TRadiobutton', font=('Arial', 12))
+        self.style.configure('SRC.TRadiobutton', font=('Arial', 15))
         
         self.hFrame = ttk.Frame(self)
         self.hFrame.grid(row=0, column=1, padx=PADDING, pady=PADDING)
@@ -92,7 +92,7 @@ class App(TkinterDnD.Tk):
 
         self.shrinkVar = tk.IntVar()
         self.shrinkVar.set(1)
-        self.shrinkPath = ttk.Checkbutton(self.srcFileFrame, text='Shorten path', variable=self.shrinkVar, command=self.toggle_shrink, style='SRC.TCheckbutton')
+        self.shrinkPath = ttk.Checkbutton(self.srcFileFrame, text='Shorten paths', variable=self.shrinkVar, command=self.toggle_shrink, style='SRC.TCheckbutton')
         self.shrinkPath.grid(row=0, column=0, sticky='e')
 
         self.srcFiles = tk.Text(self.srcFileFrame, width=30, height=10, font=('Consolas', 13), wrap='none', xscrollcommand=self.hbar.set, yscrollcommand=self.sbar.set)
@@ -104,7 +104,7 @@ class App(TkinterDnD.Tk):
         self.methodFrame = ttk.Frame(self)
         self.methodFrame.grid(row=2, column=1, sticky='n', padx=PADDING, pady=PADDING)
 
-        self.method = ttk.Label(self.methodFrame, text='Method: ', font=('Arial', 13))
+        self.method = ttk.Label(self.methodFrame, text='Method: ', font=('Arial', 15))
         self.method.grid(row=0, column=0)
 
         self.methodVar = tk.IntVar()
@@ -131,6 +131,9 @@ class App(TkinterDnD.Tk):
         self.destDir.grid(row=1, column=0)
 
         self.dhbar.config(command=self.destDir.xview)
+
+        self.pasteButton = ttk.Button(self.methodFrame, text='Paste', style='SRC.TButton')
+        self.pasteButton.grid(row=1, column=0, columnspan=3, pady=PADDING, sticky='nsew', ipady=PADDING)
 
     def chooseSrc(self):
         tmp = filedialog.askopenfilenames(title='Choose the source files to copy', filetypes=[('All files', '*.*')])
