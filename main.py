@@ -27,6 +27,7 @@ class App(TkinterDnD.Tk):
         self.style.theme_use('vista' if ONWIN else 'clam')
         self.style.configure('SRC.TButton', font=('Arial', 15))
         self.style.configure('SRC.TCheckbutton', font=('Arial', 12))
+        self.style.configure('SRC.TRadiobutton', font=('Arial', 12))
         
         self.hFrame = ttk.Frame(self)
         self.hFrame.grid(row=0, column=1, padx=PADDING, pady=PADDING)
@@ -86,6 +87,20 @@ class App(TkinterDnD.Tk):
 
         self.sbar.config(command=self.srcFiles.yview)
         self.hbar.config(command=self.srcFiles.xview)
+
+        self.methodFrame = ttk.Frame(self)
+        self.methodFrame.grid(row=2, column=1, sticky='n', padx=PADDING, pady=PADDING)
+
+        self.method = ttk.Label(self.methodFrame, text='Method: ', font=('Arial', 13))
+        self.method.grid(row=0, column=0)
+
+        self.methodVar = tk.IntVar()
+        self.methodVar.set(0)
+
+        self.copyButton = ttk.Radiobutton(self.methodFrame, text='Copy', variable=self.methodVar, value=0, style='SRC.TRadiobutton')
+        self.copyButton.grid(row=0, column=1, padx=PADDING)
+        self.cutButton = ttk.Radiobutton(self.methodFrame, text='Cut', variable=self.methodVar, value=1, style='SRC.TRadiobutton')
+        self.cutButton.grid(row=0, column=2, padx=PADDING)
 
     def chooseSrc(self):
         tmp = filedialog.askopenfilenames(title='Choose the source files to copy', filetypes=[('All files', '*.*')])
