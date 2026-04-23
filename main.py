@@ -3,11 +3,19 @@ import ctypes
 import tkinter as tk
 from tkinter import ttk, filedialog
 import platform
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 
-ctypes.windll.shcore.SetProcessDpiAwareness(2)
-scale = ctypes.windll.shcore.GetScaleFactorForDevice(0) / 100
 ONWIN = platform.system() == 'Windows'
+if ONWIN:
+    ctypes.windll.shcore.SetProcessDpiAwareness(2)
+    scale = ctypes.windll.shcore.GetScaleFactorForDevice(0) / 100
+
+
+def change_path(path):
+    if ONWIN:
+        return str(PureWindowsPath(path))
+    else:
+        return str(Path(path).as_posix())
 
 class App(TkinterDnD.Tk):
     def __init__(self):
@@ -18,10 +26,12 @@ class App(TkinterDnD.Tk):
         BTNSZ = int(min(WIDTH, HEIGHT) * 0.2)
 
         self.title('EasyCopy Copier')
-        self.tk.call('tk', 'scaling', scale * 1.3)
+        if ONWIN:
+            self.tk.call('tk', 'scaling', scale * 1.3)
         self.resizable(False, False)
 
         self.srcFiless = None
+        self.destDirss = None
 
         self.style = ttk.Style()
         self.style.theme_use('vista' if ONWIN else 'clam')
@@ -55,12 +65,15 @@ class App(TkinterDnD.Tk):
         self.arrow.pack()
         self.arrow.create_polygon(0, DHEIGHT // 4, DWIDTH // 2, DHEIGHT // 4, DWIDTH // 2, 0, DWIDTH, DHEIGHT // 2, DWIDTH // 2, DHEIGHT, DWIDTH // 2, DHEIGHT * 3 // 4, 0, DHEIGHT * 3 // 4, fill='green')
 
-        self.dstFrame = ttk.Frame(self, width=BTNSZ, height=BTNSZ)
-        self.dstFrame.grid(row=1, column=2, padx=PADDING, pady=PADDING)
-        self.dstFrame.pack_propagate(False)
+        self.destFrame = ttk.Frame(self, width=BTNSZ, height=BTNSZ)
+        self.destFrame.grid(row=1, column=2, padx=PADDING, pady=PADDING, sticky='w')
+        self.destFrame.pack_propagate(False)
 
-        self.distButton = ttk.Button(self.dstFrame, text='Choose or drag in\n destination folder', command=lambda: None, style='SRC.TButton')
-        self.distButton.pack(fill='both', expand=True, anchor='center')
+        self.destFrame.drop_target_register(DND_FILES)
+        self.destFrame.dnd_bind('<<Drop>>', self.drop_dest)
+
+        self.destButton = ttk.Button(self.destFrame, text='Choose or drag in\n destination folder', command=self.chooseDest, style='SRC.TButton')
+        self.destButton.pack(fill='both', expand=True, anchor='center')
 
         self.srcFileFrame = ttk.Frame(self)
         self.srcFileFrame.grid(row=2, column=0, sticky='w', padx=PADDING * 2, pady=PADDING * 2)
@@ -102,6 +115,23 @@ class App(TkinterDnD.Tk):
         self.cutButton = ttk.Radiobutton(self.methodFrame, text='Cut', variable=self.methodVar, value=1, style='SRC.TRadiobutton')
         self.cutButton.grid(row=0, column=2, padx=PADDING)
 
+        self.destDirFrame = ttk.Frame(self)
+        self.destDirFrame.grid(row=2, column=2, sticky='nw', padx=PADDING * 2, pady=PADDING * 2)
+
+        self.destDirFrame.drop_target_register(DND_FILES)
+        self.destDirFrame.dnd_bind('<<Drop>>', self.drop_dest)
+        
+        self.dhbar = tk.Scrollbar(self.destDirFrame, orient='horizontal')
+        self.dhbar.grid(row=2, column=0, sticky='ew')
+
+        self.dstDirTitle = ttk.Label(self.destDirFrame, text='Destination Folder:', font=('Arial', 15))
+        self.dstDirTitle.grid(row=0, column=0, sticky='w')
+
+        self.destDir = tk.Text(self.destDirFrame, width=30, height=1, font=('Consolas', 13), wrap='none', xscrollcommand=self.dhbar.set)
+        self.destDir.grid(row=1, column=0)
+
+        self.dhbar.config(command=self.destDir.xview)
+
     def chooseSrc(self):
         tmp = filedialog.askopenfilenames(title='Choose the source files to copy', filetypes=[('All files', '*.*')])
         if tmp:
@@ -117,14 +147,36 @@ class App(TkinterDnD.Tk):
     def toggle_shrink(self):
         isShrunk = self.shrinkVar.get()
         self.srcFiles.config(state='normal')
+        if self.srcFiless is None:
+            return
         if isShrunk:
             result = '\n'.join([str(Path(self.srcFiless[i]).name) for i in range(len(self.srcFiless))])
         else:
-            result = '\n'.join(self.srcFiless)
+            result = '\n'.join([change_path(self.srcFiless[i]) for i in range(len(self.srcFiless))])
         self.srcFiles.delete('1.0', 'end')
         self.srcFiles.insert('1.0', result)
         if isShrunk:
             self.srcFiles.config(state='disabled')
+
+    def chooseDest(self):
+        tmp = filedialog.askdirectory(title='Choose the destination directory')
+        if tmp:
+            self.destDirss = change_path(tmp)
+            self.update_dest()
+
+    def drop_dest(self, event):
+        tmp = self.tk.splitlist(event.data)
+        if tmp:
+            tmp = ''.join(tmp)
+            print(tmp)
+            if Path(tmp).is_dir():
+                self.destDirss = change_path(tmp)
+                self.update_dest()
+    
+    def update_dest(self):
+        result = self.destDirss
+        self.destDir.delete('1.0', 'end')
+        self.destDir.insert('1.0', result)
 
 app = App()
 app.mainloop()
