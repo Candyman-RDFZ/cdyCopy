@@ -38,6 +38,9 @@ class App(TkinterDnD.Tk):
         self.srcFrame.grid(row=1, column=0, padx=PADDING, pady=PADDING, sticky='e')
         self.srcFrame.pack_propagate(False)
 
+        self.srcFrame.drop_target_register(DND_FILES)
+        self.srcFrame.dnd_bind('<<Drop>>', self.drop_src)
+
         self.sourceButton = ttk.Button(self.srcFrame, text='Choose or drag in\n     source files', command=self.chooseSrc, style='SRC.TButton')
         self.sourceButton.pack(fill='both', expand=True, anchor='center')
 
@@ -60,6 +63,9 @@ class App(TkinterDnD.Tk):
 
         self.srcFileFrame = ttk.Frame(self)
         self.srcFileFrame.grid(row=2, column=0, sticky='w', padx=PADDING * 2, pady=PADDING * 2)
+
+        self.srcFileFrame.drop_target_register(DND_FILES)
+        self.srcFileFrame.dnd_bind('<<Drop>>', self.drop_src)
         
         self.sbar = tk.Scrollbar(self.srcFileFrame)
         self.sbar.grid(row=1, column=1, sticky='wns')
@@ -73,17 +79,25 @@ class App(TkinterDnD.Tk):
         self.shrinkVar = tk.IntVar()
         self.shrinkVar.set(1)
         self.shrinkPath = ttk.Checkbutton(self.srcFileFrame, text='Shorten path', variable=self.shrinkVar, command=self.toggle_shrink, style='SRC.TCheckbutton')
-        self.shrinkPath.grid(row=0, column=0)
+        self.shrinkPath.grid(row=0, column=0, sticky='e')
 
-        self.srcFiles = tk.Text(self.srcFileFrame, width=40, height=10, font=('Consolas', 13), wrap='none', xscrollcommand=self.hbar.set, yscrollcommand=self.sbar.set)
+        self.srcFiles = tk.Text(self.srcFileFrame, width=30, height=10, font=('Consolas', 13), wrap='none', xscrollcommand=self.hbar.set, yscrollcommand=self.sbar.set)
         self.srcFiles.grid(row=1, column=0)
 
         self.sbar.config(command=self.srcFiles.yview)
         self.hbar.config(command=self.srcFiles.xview)
 
     def chooseSrc(self):
-        self.srcFiless = filedialog.askopenfilenames(title='Choose the source files to copy', filetypes=[('All files', '*.*')])
-        self.toggle_shrink()
+        tmp = filedialog.askopenfilenames(title='Choose the source files to copy', filetypes=[('All files', '*.*')])
+        if tmp:
+            self.srcFiless = tmp
+            self.toggle_shrink()
+
+    def drop_src(self, event):
+        tmp = self.tk.splitlist(event.data)
+        if tmp:
+            self.srcFiless = tmp
+            self.toggle_shrink()
 
     def toggle_shrink(self):
         isShrunk = self.shrinkVar.get()
