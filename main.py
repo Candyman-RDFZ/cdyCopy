@@ -1,8 +1,9 @@
 from tkinterdnd2 import TkinterDnD, DND_FILES
 import ctypes
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, filedialog
 import platform
+from pathlib import Path
 
 ctypes.windll.shcore.SetProcessDpiAwareness(2)
 scale = ctypes.windll.shcore.GetScaleFactorForDevice(0) / 100
@@ -20,9 +21,12 @@ class App(TkinterDnD.Tk):
         self.tk.call('tk', 'scaling', scale * 1.3)
         self.resizable(False, False)
 
+        self.srcFiless = None
+
         self.style = ttk.Style()
         self.style.theme_use('vista' if ONWIN else 'clam')
         self.style.configure('SRC.TButton', font=('Arial', 15))
+        self.style.configure('SRC.TCheckbutton', font=('Arial', 12))
         
         self.hFrame = ttk.Frame(self)
         self.hFrame.grid(row=0, column=1, padx=PADDING, pady=PADDING)
@@ -31,10 +35,10 @@ class App(TkinterDnD.Tk):
         self.header.pack()
 
         self.srcFrame = ttk.Frame(self, width=BTNSZ, height=BTNSZ)
-        self.srcFrame.grid(row=1, column=0, padx=PADDING, pady=PADDING)
+        self.srcFrame.grid(row=1, column=0, padx=PADDING, pady=PADDING, sticky='e')
         self.srcFrame.pack_propagate(False)
 
-        self.sourceButton = ttk.Button(self.srcFrame, text='Choose or drag in\n     source files', command=lambda: None, style = 'SRC.TButton')
+        self.sourceButton = ttk.Button(self.srcFrame, text='Choose or drag in\n     source files', command=self.chooseSrc, style='SRC.TButton')
         self.sourceButton.pack(fill='both', expand=True, anchor='center')
 
         self.arrowFrame = ttk.Frame(self)
@@ -53,6 +57,45 @@ class App(TkinterDnD.Tk):
 
         self.distButton = ttk.Button(self.dstFrame, text='Choose or drag in\n destination folder', command=lambda: None, style='SRC.TButton')
         self.distButton.pack(fill='both', expand=True, anchor='center')
+
+        self.srcFileFrame = ttk.Frame(self)
+        self.srcFileFrame.grid(row=2, column=0, sticky='w', padx=PADDING * 2, pady=PADDING * 2)
+        
+        self.sbar = tk.Scrollbar(self.srcFileFrame)
+        self.sbar.grid(row=1, column=1, sticky='wns')
+
+        self.hbar = tk.Scrollbar(self.srcFileFrame, orient='horizontal')
+        self.hbar.grid(row=2, column=0, sticky='ew')
+
+        self.srcFileTitle = ttk.Label(self.srcFileFrame, text='Chosen Files:', font=('Arial', 15))
+        self.srcFileTitle.grid(row=0, column=0, sticky='w')
+
+        self.shrinkVar = tk.IntVar()
+        self.shrinkVar.set(1)
+        self.shrinkPath = ttk.Checkbutton(self.srcFileFrame, text='Shorten path', variable=self.shrinkVar, command=self.toggle_shrink, style='SRC.TCheckbutton')
+        self.shrinkPath.grid(row=0, column=0)
+
+        self.srcFiles = tk.Text(self.srcFileFrame, width=40, height=10, font=('Consolas', 13), wrap='none', xscrollcommand=self.hbar.set, yscrollcommand=self.sbar.set)
+        self.srcFiles.grid(row=1, column=0)
+
+        self.sbar.config(command=self.srcFiles.yview)
+        self.hbar.config(command=self.srcFiles.xview)
+
+    def chooseSrc(self):
+        self.srcFiless = filedialog.askopenfilenames(title='Choose the source files to copy', filetypes=[('All files', '*.*')])
+        self.toggle_shrink()
+
+    def toggle_shrink(self):
+        isShrunk = self.shrinkVar.get()
+        self.srcFiles.config(state='normal')
+        if isShrunk:
+            result = '\n'.join([str(Path(self.srcFiless[i]).name) for i in range(len(self.srcFiless))])
+        else:
+            result = '\n'.join(self.srcFiless)
+        self.srcFiles.delete('1.0', 'end')
+        self.srcFiles.insert('1.0', result)
+        if isShrunk:
+            self.srcFiles.config(state='disabled')
 
 app = App()
 app.mainloop()
