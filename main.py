@@ -1,8 +1,8 @@
 from tkinterdnd2 import TkinterDnD, DND_FILES
 import ctypes
 import tkinter as tk
-from tkinter import ttk, filedialog
-import platform
+from tkinter import ttk, filedialog, messagebox
+import platform, shutil
 from pathlib import Path, PureWindowsPath
 
 ONWIN = platform.system() == 'Windows'
@@ -30,8 +30,8 @@ class App(TkinterDnD.Tk):
             self.tk.call('tk', 'scaling', scale * 1.3)
         self.resizable(False, False)
 
-        self.srcFiless = None
-        self.destDirss = None
+        self.srcFiless = ''
+        self.destDirss = ''
 
         self.style = ttk.Style()
         self.style.theme_use('vista' if ONWIN else 'clam')
@@ -95,7 +95,7 @@ class App(TkinterDnD.Tk):
         self.shrinkPath = ttk.Checkbutton(self.srcFileFrame, text='Shorten paths', variable=self.shrinkVar, command=self.toggle_shrink, style='SRC.TCheckbutton')
         self.shrinkPath.grid(row=0, column=0, sticky='e')
 
-        self.srcFiles = tk.Text(self.srcFileFrame, width=30, height=10, font=('Consolas', 13), wrap='none', xscrollcommand=self.hbar.set, yscrollcommand=self.sbar.set)
+        self.srcFiles = tk.Text(self.srcFileFrame, width=30, height=10, font=('Consolas', 13), wrap='none', xscrollcommand=self.hbar.set, yscrollcommand=self.sbar.set, state='disabled')
         self.srcFiles.grid(row=1, column=0)
 
         self.sbar.config(command=self.srcFiles.yview)
@@ -127,12 +127,12 @@ class App(TkinterDnD.Tk):
         self.dstDirTitle = ttk.Label(self.destDirFrame, text='Destination Folder:', font=('Arial', 15))
         self.dstDirTitle.grid(row=0, column=0, sticky='w')
 
-        self.destDir = tk.Text(self.destDirFrame, width=30, height=1, font=('Consolas', 13), wrap='none', xscrollcommand=self.dhbar.set)
+        self.destDir = tk.Text(self.destDirFrame, width=30, height=1, font=('Consolas', 13), wrap='none', xscrollcommand=self.dhbar.set, state='disabled')
         self.destDir.grid(row=1, column=0)
 
         self.dhbar.config(command=self.destDir.xview)
 
-        self.pasteButton = ttk.Button(self.methodFrame, text='Paste', style='SRC.TButton')
+        self.pasteButton = ttk.Button(self.methodFrame, text='Paste', command=self.paste, style='SRC.TButton')
         self.pasteButton.grid(row=1, column=0, columnspan=3, pady=PADDING, sticky='nsew', ipady=PADDING)
 
     def chooseSrc(self):
@@ -150,16 +150,13 @@ class App(TkinterDnD.Tk):
     def toggle_shrink(self):
         isShrunk = self.shrinkVar.get()
         self.srcFiles.config(state='normal')
-        if self.srcFiless is None:
-            return
         if isShrunk:
             result = '\n'.join([str(Path(self.srcFiless[i]).name) for i in range(len(self.srcFiless))])
         else:
             result = '\n'.join([change_path(self.srcFiless[i]) for i in range(len(self.srcFiless))])
         self.srcFiles.delete('1.0', 'end')
         self.srcFiles.insert('1.0', result)
-        if isShrunk:
-            self.srcFiles.config(state='disabled')
+        self.srcFiles.config(state='disabled')
 
     def chooseDest(self):
         tmp = filedialog.askdirectory(title='Choose the destination directory')
@@ -177,9 +174,38 @@ class App(TkinterDnD.Tk):
                 self.update_dest()
     
     def update_dest(self):
+        self.destDir.config(state='normal')
         result = self.destDirss
         self.destDir.delete('1.0', 'end')
         self.destDir.insert('1.0', result)
+        self.destDir.config(state='disabled')
 
+    def paste(self):
+        if not self.srcFiless:
+            messagebox.showerror('Error', 'Please select the files to be copied.')
+            return
+        if not self.destDirss:
+            messagebox.showerror('Error', 'Please select the destination folder the files will be copied into.')
+            return
+        for file in self.srcFiless:
+            if not Path(file).exists():
+                messagebox.showerror('Error', f'The file {change_path(file)} is not found.')
+                return
+        copy = not self.methodVar.get()
+        for file in self.srcFiless:
+            try:
+                if copy:
+                    shutil.copy(file, self.destDirss)
+                else:
+                    shutil.move(file, self.destDirss)
+            except:
+                messagebox.showerror('Error', f'Error copying the file {change_path(file)} to {change_path(self.destDirss)}.')
+                return
+            
+        self.srcFiless = ''
+        self.destDirss = ''
+        self.toggle_shrink()
+        self.update_dest()
+        
 app = App()
 app.mainloop()
