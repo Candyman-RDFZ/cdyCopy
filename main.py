@@ -26,9 +26,12 @@ class App(TkinterDnD.Tk):
         BTNSZ = int(min(WIDTH, HEIGHT) * 0.2)
 
         self.title('EasyCopy Copier')
-        if ONWIN:
+        if ONWIN:   
             self.tk.call('tk', 'scaling', scale * 1.3)
         self.resizable(False, False)
+        self.attributes('-topmost', True)
+        self.photo = tk.PhotoImage(file='./assets/icon.png')
+        self.iconphoto(True, self.photo)
 
         self.srcFiless = ''
         self.destDirss = ''
