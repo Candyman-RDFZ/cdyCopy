@@ -4,6 +4,7 @@ import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 import platform, shutil
 from pathlib import Path, PureWindowsPath
+from settings import Settings
 
 ONWIN = platform.system() == 'Windows'
 if ONWIN:
@@ -136,7 +137,10 @@ class App(TkinterDnD.Tk):
         self.dhbar.config(command=self.destDir.xview)
 
         self.pasteButton = ttk.Button(self.methodFrame, text='Paste', command=self.paste, style='SRC.TButton')
-        self.pasteButton.grid(row=1, column=0, columnspan=3, pady=PADDING, sticky='nsew', ipady=PADDING)
+        self.pasteButton.grid(row=1, column=0, columnspan=3, pady=PADDING, sticky='nsew', ipady=PADDING // 2)
+
+        self.settingsButton = ttk.Button(self.methodFrame, text='Settings', command=lambda: self.open_settings(0), style='SRC.TButton')
+        self.settingsButton.grid(row=2, column=0, columnspan=3, pady=PADDING * 5, sticky='nsew', ipady=PADDING // 2)
 
     def chooseSrc(self):
         tmp = filedialog.askopenfilenames(title='Choose the source files to copy', filetypes=[('All files', '*.*')])
@@ -209,6 +213,11 @@ class App(TkinterDnD.Tk):
         self.destDirss = ''
         self.toggle_shrink()
         self.update_dest()
+    
+    def open_settings(self, page):
+        sapp = Settings(self, page)
+        self.wait_window(sapp)
+        sapp.mainloop()
         
 app = App()
 app.mainloop()
