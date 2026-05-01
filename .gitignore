@@ -3,3 +3,4 @@ dist/
 EasyCopy.spec
 installer/
 .gitignore
+__pycache__
