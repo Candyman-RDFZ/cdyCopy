@@ -200,6 +200,14 @@ class App(TkinterDnD.Tk):
                 return
         copy = not self.methodVar.get()
         for file in self.srcFiless:
+            if Path(file).is_dir():
+                try:
+                    if copy:
+                        shutil.copytree(file, self.destDirss)
+                    else:
+                        shutil.move(file, self.destDirss)
+                except:
+                    messagebox.showerror('Error', f'Error copying the folder {change_path(file)}')
             try:
                 if copy:
                     shutil.copy(file, self.destDirss)
