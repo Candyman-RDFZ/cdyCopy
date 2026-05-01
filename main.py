@@ -203,19 +203,21 @@ class App(TkinterDnD.Tk):
             if Path(file).is_dir():
                 try:
                     if copy:
-                        shutil.copytree(file, self.destDirss)
+                        fullDir = Path(self.destDirss) / Path(file).name
+                        shutil.copytree(file, fullDir, dirs_exist_ok=True)
                     else:
                         shutil.move(file, self.destDirss)
                 except:
                     messagebox.showerror('Error', f'Error copying the folder {change_path(file)}')
-            try:
-                if copy:
-                    shutil.copy(file, self.destDirss)
-                else:
-                    shutil.move(file, self.destDirss)
-            except:
-                messagebox.showerror('Error', f'Error copying the file {change_path(file)} to {change_path(self.destDirss)}.')
-                return
+            else:
+                try:
+                    if copy:
+                        shutil.copy(file, self.destDirss)
+                    else:
+                        shutil.move(file, self.destDirss)
+                except:
+                    messagebox.showerror('Error', f'Error copying the file {change_path(file)} to {change_path(self.destDirss)}.')
+                    return
             
         self.srcFiless = ''
         self.destDirss = ''
