@@ -209,6 +209,7 @@ class App(TkinterDnD.Tk):
                         shutil.move(file, self.destDirss)
                 except:
                     messagebox.showerror('Error', f'Error copying the folder {change_path(file)}')
+                    return
             else:
                 try:
                     if copy:
