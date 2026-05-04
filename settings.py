@@ -26,8 +26,8 @@ class Settings(tk.Toplevel):
 
         style = ttk.Style()
 
-        style.configure('OK.TButton', font=('Arial', 13))
-        style.configure('TNotebook.Tab', background='#ffffff', foreground='black', padding=(PADDING // 5, PADDING // 5), font=('Arial', 12))
+        style.configure('OK.TButton', font=('Arial', 11))
+        style.configure('TNotebook.Tab', background='#ffffff', foreground='black', padding=(PADDING // 5, PADDING // 5), font=('Arial', 11))
         style.map('TNotebook.Tab', background=[('selected', "#ec1eff")], foreground=[('selected', 'black')], focuscolor=[('selected', '')])
         style.configure('NB.TFrame', background='white')
         style.configure('TLabelframe', background='white', foreground='black')
@@ -50,16 +50,17 @@ class Settings(tk.Toplevel):
         self.notebook.select(defaultPage)
 
         self.buttonFrame = ttk.Frame(self)
-        self.buttonFrame.grid(row=0, column=0, sticky='se', pady=PADDING * 4 // 5)
+        self.buttonFrame.grid(row=0, column=0, sticky='sew', pady=PADDING * 4 // 5)
+        self.buttonFrame.columnconfigure(1, weight=1)
 
         self.okButton = ttk.Button(self.buttonFrame, text='OK', style='OK.TButton')
-        self.okButton.grid(row=0, column=0, ipady=PADDING // 6)
+        self.okButton.grid(row=0, column=1, ipady=PADDING // 5, sticky='e')
 
         self.cancelButton = ttk.Button(self.buttonFrame, text='Cancel', command=self.destroy, style='OK.TButton')
-        self.cancelButton.grid(row=0, column=1, padx=(PADDING // 3, PADDING // 2), ipady=PADDING // 6)
+        self.cancelButton.grid(row=0, column=2, padx=(PADDING // 3, PADDING // 2), ipady=PADDING // 5, sticky='e')
 
-        self.runFrame = ttk.LabelFrame(self.general, text='Run')
+        self.helpButton = ttk.Button(self.buttonFrame, text='Help', style='OK.TButton')
+        self.helpButton.grid(row=0, column=0, padx=PADDING // 2, ipady=PADDING // 5, sticky='w')
+
+        self.runFrame = tk.LabelFrame(self.general, text='Run', bg='white')
         self.runFrame.grid(row=0, column=0)
-
-        test = ttk.Label(self.runFrame, text='hello')
-        test.pack(padx=10, pady=10)
