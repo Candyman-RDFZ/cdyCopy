@@ -5,6 +5,7 @@ from tkinter import ttk, filedialog, messagebox
 import platform, shutil
 from pathlib import Path, PureWindowsPath
 from settings import Settings
+from core.loader import getConfig as g
 
 ONWIN = platform.system() == 'Windows'
 if ONWIN:
@@ -31,7 +32,7 @@ class App(TkinterDnD.Tk):
             self.tk.call('tk', 'scaling', scale * 1.3)
         self.resizable(False, False)
         self.attributes('-topmost', True)
-        self.photo = tk.PhotoImage(file='./assets/icon.png')
+        self.photo = tk.PhotoImage(file='icon.png')
         self.iconphoto(True, self.photo)
 
         self.srcFiless = ''
@@ -141,6 +142,9 @@ class App(TkinterDnD.Tk):
 
         self.settingsButton = ttk.Button(self.methodFrame, text='Settings', command=lambda: self.open_settings(0), style='SRC.TButton')
         self.settingsButton.grid(row=2, column=0, columnspan=3, pady=PADDING * 5, sticky='nsew', ipady=PADDING // 2)
+
+        if int(g('General', 'runMinimized')):
+            self.iconify()
 
     def chooseSrc(self):
         tmp = filedialog.askopenfilenames(title='Choose the source files to copy', filetypes=[('All files', '*.*')])

@@ -1,2 +1,3 @@
 @echo off
-pyinstaller --windowed --onedir --name=EasyCopy --icon=icon.ico --add-data "assets;assets" main.py
+pyinstaller --onedir --name=EasyCopy --icon=icon.ico --add-data "icon.png;icon.png" main.py
+pause

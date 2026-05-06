@@ -1,5 +1,10 @@
 import tkinter as tk
 from tkinter import ttk
+from core.startup import startupManager
+from core.loader import getConfig as g
+from core.writer import writeConfig as w
+
+startup = startupManager('EasyCopy')
 
 class Settings(tk.Toplevel):
     def __init__(self, parent, defaultPage):
@@ -53,7 +58,7 @@ class Settings(tk.Toplevel):
         self.buttonFrame.grid(row=0, column=0, sticky='sew', pady=PADDING * 4 // 5)
         self.buttonFrame.columnconfigure(1, weight=1)
 
-        self.okButton = ttk.Button(self.buttonFrame, text='OK', style='OK.TButton')
+        self.okButton = ttk.Button(self.buttonFrame, text='OK', style='OK.TButton', command=self.ok)
         self.okButton.grid(row=0, column=1, ipady=PADDING // 5, sticky='e')
 
         self.cancelButton = ttk.Button(self.buttonFrame, text='Cancel', command=self.destroy, style='OK.TButton')
@@ -69,6 +74,26 @@ class Settings(tk.Toplevel):
         self.runFrame.grid(row=0, column=0, padx=PADDING, pady=PADDING, sticky='ew')
 
         self.runOnStartupVar = tk.IntVar()
-        self.runOnStartupVar.set(0)
+        self.runOnStartupVar.set(int(g('General', 'runOnStartup')))
         self.runOnStartup = ttk.Checkbutton(self.runFrame, text='Run on startup', variable=self.runOnStartupVar)
         self.runOnStartup.grid(row=0, column=0, padx=PADDING, pady=PADDING)
+
+        self.runMinimizedVar = tk.IntVar()
+        self.runMinimizedVar.set(int(g('General', 'runMinimized')))
+        self.runMinimized = ttk.Checkbutton(self.runFrame, text='Run minimized', variable=self.runMinimizedVar)
+        self.runMinimized.grid(row=0, column=1, padx=PADDING * 3, pady=PADDING)
+    
+    def ok(self):
+        if self.runOnStartupVar.get():
+            startup.enable()
+            w('General', 'runOnStartup', 1)
+        else:
+            startup.disable()
+            w('General', 'runOnStartup', 0)
+        
+        if self.runMinimizedVar.get():
+            w('General', 'runMinimized', 1)
+        else:
+            w('General', 'runMinimized', 0)
+
+        self.destroy()
