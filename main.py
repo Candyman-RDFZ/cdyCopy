@@ -2,7 +2,7 @@ from tkinterdnd2 import TkinterDnD, DND_FILES
 import ctypes
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
-import platform, shutil
+import platform, shutil, sv_ttk
 from pathlib import Path, PureWindowsPath
 from settings import Settings
 from core.loader import getConfig as g

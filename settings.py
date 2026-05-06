@@ -1,8 +1,9 @@
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, messagebox
 from core.startup import startupManager
 from core.loader import getConfig as g
 from core.writer import writeConfig as w
+from core.restart import re
 
 startup = startupManager('EasyCopy')
 
@@ -49,8 +50,8 @@ class Settings(tk.Toplevel):
         self.general = ttk.Frame(self.notebook, style='NB.TFrame')
         self.notebook.add(self.general, text='General')
 
-        self.templates = ttk.Frame(self.notebook, style='NB.TFrame')
-        self.notebook.add(self.templates, text='Templates' )
+        # self.templates = ttk.Frame(self.notebook, style='NB.TFrame')
+        # self.notebook.add(self.templates, text='Templates' )
 
         self.notebook.select(defaultPage)
 
@@ -82,6 +83,14 @@ class Settings(tk.Toplevel):
         self.runMinimizedVar.set(int(g('General', 'runMinimized')))
         self.runMinimized = ttk.Checkbutton(self.runFrame, text='Run minimized', variable=self.runMinimizedVar)
         self.runMinimized.grid(row=0, column=1, padx=PADDING * 3, pady=PADDING)
+
+        # self.appearanceFrameTitle = tk.Label(self.general, text='Appearance', bg='white')
+        # self.appearanceFrameTitle.config(padx=PADDING // 5)
+        # self.appearanceFrame = tk.LabelFrame(self.general, labelwidget=self.appearanceFrameTitle, bg='white')
+        # self.appearanceFrame.grid(row=1, column=0, padx=PADDING, pady=(0, PADDING), sticky='ew')
+
+        # self.test = tk.Label(self.appearanceFrame, text='test test test')
+        # self.test.grid(row=0, column=0, padx=PADDING, pady=PADDING)
     
     def ok(self):
         if self.runOnStartupVar.get():
@@ -96,4 +105,7 @@ class Settings(tk.Toplevel):
         else:
             w('General', 'runMinimized', 0)
 
+        relaunch = messagebox.askyesno('Warning', 'The app needs to restart to apply some settings. Do you want to restart now?', icon='warning')
         self.destroy()
+        if relaunch:
+            re()

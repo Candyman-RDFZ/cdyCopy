@@ -5,7 +5,7 @@ class startupManager:
     def __init__(self, appName):
         self.appName = appName
         self.system = platform.system()
-        self.scriptPath = Path(sys.argv[0]).resolve()
+        self.scriptPath = Path(__file__).resolve()
         self.exec = sys.executable
 
     def enable(self):
