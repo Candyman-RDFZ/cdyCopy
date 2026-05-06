@@ -30,7 +30,7 @@ class Settings(tk.Toplevel):
         style.configure('TNotebook.Tab', background='#ffffff', foreground='black', padding=(PADDING // 5, PADDING // 5), font=('Arial', 11))
         style.map('TNotebook.Tab', background=[('selected', "#ec1eff")], foreground=[('selected', 'black')], focuscolor=[('selected', '')])
         style.configure('NB.TFrame', background='white')
-        style.configure('TLabelframe', background='white', foreground='black')
+        style.configure('TCheckbutton', background='white')
 
         self.rowconfigure(0, weight=1)
         self.columnconfigure(0, weight=1)
@@ -62,5 +62,13 @@ class Settings(tk.Toplevel):
         self.helpButton = ttk.Button(self.buttonFrame, text='Help', style='OK.TButton')
         self.helpButton.grid(row=0, column=0, padx=PADDING // 2, ipady=PADDING // 5, sticky='w')
 
-        self.runFrame = tk.LabelFrame(self.general, text='Run', bg='white')
-        self.runFrame.grid(row=0, column=0)
+        self.general.columnconfigure(0, weight=1)
+        self.runFrameTitle = tk.Label(self.general, text='Run', bg='white')
+        self.runFrameTitle.config(padx=PADDING // 5)
+        self.runFrame = tk.LabelFrame(self.general, labelwidget=self.runFrameTitle, bg='white')
+        self.runFrame.grid(row=0, column=0, padx=PADDING, pady=PADDING, sticky='ew')
+
+        self.runOnStartupVar = tk.IntVar()
+        self.runOnStartupVar.set(0)
+        self.runOnStartup = ttk.Checkbutton(self.runFrame, text='Run on startup', variable=self.runOnStartupVar)
+        self.runOnStartup.grid(row=0, column=0, padx=PADDING, pady=PADDING)
