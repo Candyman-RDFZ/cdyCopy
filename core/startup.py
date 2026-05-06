@@ -24,14 +24,13 @@ class startupManager:
     def _enable_windows(self):
         import winreg as reg
 
-        # key = reg.OpenKey(reg.HKEY_CURRENT_USER, r'Software\Microsoft\Windows\CurrentVersion\Run', 0, reg.KEY_SET_VALUE)
+        key = reg.OpenKey(reg.HKEY_CURRENT_USER, r'Software\Microsoft\Windows\CurrentVersion\Run', 0, reg.KEY_SET_VALUE)
         if self.exec.endswith(('python.exe', 'pythonw.exe')):
             cmd = f'"{self.exec}" "{self.scriptPath}"'
         else:
             cmd = f'"{self.exec}"'
-        print(cmd)
-        # reg.SetValueEx(key, self.appName, 0, reg.REG_SZ, cmd)
-        # reg.CloseKey(key)
+        reg.SetValueEx(key, self.appName, 0, reg.REG_SZ, cmd)
+        reg.CloseKey(key)
     
     def _enable_mac():
         pass
