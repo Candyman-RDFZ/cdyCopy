@@ -1,6 +1,6 @@
 build/
 dist/
-EasyCopy.spec
+cdyCopy.spec
 installer/
 .gitignore
 __pycache__
