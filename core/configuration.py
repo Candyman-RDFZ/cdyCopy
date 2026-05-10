@@ -3,8 +3,8 @@ from configparser import ConfigParser
 class Configuration:
     def __init__(self, INIPATH):
         self.config = ConfigParser()
+        self.INIPATH = str(INIPATH)
         self.config.read(INIPATH)
-        self.INIPATH = INIPATH
 
     def getConfig(self, section, key):
         try:

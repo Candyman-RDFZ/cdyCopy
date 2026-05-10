@@ -27,7 +27,10 @@ class App(TkinterDnD.Tk):
         PADDING = WIDTH // 200
         BTNSZ = int(min(WIDTH, HEIGHT) * 0.2)
 
-        self.config = Configuration(Path(__file__).with_name('config.ini'))
+        if getattr(sys, 'frozen', False):
+            self.config = Configuration(Path(sys.executable).with_name('config.ini'))
+        else:
+            self.config = Configuration(Path(__file__).with_name('config.ini'))
 
         if getattr(sys, 'frozen', False):
             BASE_DIR = Path(sys.executable).resolve().parent
