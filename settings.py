@@ -1,8 +1,8 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
+from pathlib import Path
 from core.startup import startupManager
-from core.loader import getConfig as g
-from core.writer import writeConfig as w
+from core.configuration import Configuration
 from core.restart import re
 
 class Settings(tk.Toplevel):
@@ -11,6 +11,7 @@ class Settings(tk.Toplevel):
 
         self.mainScript = mainScript
         self.startup = startupManager('EasyCopy', mainScript)
+        self.config = Configuration(Path(mainScript).with_name('config.ini'))
 
         self.parent = parent
         self.title('Settings')
@@ -77,12 +78,12 @@ class Settings(tk.Toplevel):
         self.runFrame.grid(row=0, column=0, padx=PADDING, pady=PADDING, sticky='ew')
 
         self.runOnStartupVar = tk.IntVar()
-        self.runOnStartupVar.set(int(g('General', 'runOnStartup')))
+        self.runOnStartupVar.set(int(self.config.getConfig('General', 'runOnStartup')))
         self.runOnStartup = ttk.Checkbutton(self.runFrame, text='Run on startup', variable=self.runOnStartupVar)
         self.runOnStartup.grid(row=0, column=0, padx=PADDING, pady=PADDING)
 
         self.runMinimizedVar = tk.IntVar()
-        self.runMinimizedVar.set(int(g('General', 'runMinimized')))
+        self.runMinimizedVar.set(int(self.config.getConfig('General', 'runMinimized')))
         self.runMinimized = ttk.Checkbutton(self.runFrame, text='Run minimized', variable=self.runMinimizedVar)
         self.runMinimized.grid(row=0, column=1, padx=PADDING * 3, pady=PADDING)
 
@@ -97,15 +98,15 @@ class Settings(tk.Toplevel):
     def ok(self):
         if self.runOnStartupVar.get():
             self.startup.enable()
-            w('General', 'runOnStartup', 1)
+            self.config.writeConfig('General', 'runOnStartup', 1)
         else:
             self.startup.disable()
-            w('General', 'runOnStartup', 0)
+            self.config.writeConfig('General', 'runOnStartup', 0)
         
         if self.runMinimizedVar.get():
-            w('General', 'runMinimized', 1)
+            self.config.writeConfig('General', 'runMinimized', 1)
         else:
-            w('General', 'runMinimized', 0)
+            self.config.writeConfig('General', 'runMinimized', 0)
 
         relaunch = messagebox.askyesno('Warning', 'The app needs to restart to apply some settings. Do you want to restart now?', icon='warning')
         self.destroy()

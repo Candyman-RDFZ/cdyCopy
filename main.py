@@ -5,7 +5,7 @@ from tkinter import ttk, filedialog, messagebox
 import platform, shutil, sys
 from pathlib import Path, PureWindowsPath
 from settings import Settings
-from core.loader import getConfig as g
+from core.configuration import Configuration
 
 ONWIN = platform.system() == 'Windows'
 if ONWIN:
@@ -26,6 +26,8 @@ class App(TkinterDnD.Tk):
         HEIGHT = self.winfo_screenheight()
         PADDING = WIDTH // 200
         BTNSZ = int(min(WIDTH, HEIGHT) * 0.2)
+
+        self.config = Configuration(Path(__file__).with_name('config.ini'))
 
         if getattr(sys, 'frozen', False):
             BASE_DIR = Path(sys.executable).resolve().parent
@@ -149,7 +151,7 @@ class App(TkinterDnD.Tk):
         self.settingsButton = ttk.Button(self.methodFrame, text='Settings', command=lambda: self.open_settings(0), style='SRC.TButton')
         self.settingsButton.grid(row=2, column=0, columnspan=3, pady=PADDING * 5, sticky='nsew', ipady=PADDING // 2)
 
-        if int(g('General', 'runMinimized')):
+        if int(self.config.getConfig('General', 'runMinimized')):
             self.iconify()
 
     def chooseSrc(self):
