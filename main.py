@@ -2,7 +2,7 @@ from tkinterdnd2 import TkinterDnD, DND_FILES
 import ctypes
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
-import platform, shutil, sv_ttk
+import platform, shutil, sys
 from pathlib import Path, PureWindowsPath
 from settings import Settings
 from core.loader import getConfig as g
@@ -27,12 +27,18 @@ class App(TkinterDnD.Tk):
         PADDING = WIDTH // 200
         BTNSZ = int(min(WIDTH, HEIGHT) * 0.2)
 
-        self.title('EasyCopy Copier')
+        if getattr(sys, 'frozen', False):
+            BASE_DIR = Path(sys.executable).resolve().parent
+        else:
+            BASE_DIR = Path(__file__).resolve().parent
+
+        self.title('cdyCopy Copier')
         if ONWIN:   
             self.tk.call('tk', 'scaling', scale * 1.3)
         self.resizable(False, False)
         self.attributes('-topmost', True)
-        self.photo = tk.PhotoImage(file='icon.png')
+        icon_path = BASE_DIR / 'icon.png'
+        self.photo = tk.PhotoImage(file=str(icon_path))
         self.iconphoto(True, self.photo)
 
         self.srcFiless = ''
@@ -47,7 +53,7 @@ class App(TkinterDnD.Tk):
         self.hFrame = ttk.Frame(self)
         self.hFrame.grid(row=0, column=1, padx=PADDING, pady=PADDING)
 
-        self.header = ttk.Label(self.hFrame, text='EasyCopy Copier', font=('Arial', 25), anchor='center')
+        self.header = ttk.Label(self.hFrame, text='cdyCopy Copier', font=('Arial', 25), anchor='center')
         self.header.pack()
 
         self.srcFrame = ttk.Frame(self, width=BTNSZ, height=BTNSZ)
@@ -230,7 +236,7 @@ class App(TkinterDnD.Tk):
         self.update_dest()
     
     def open_settings(self, page):
-        sapp = Settings(self, page)
+        sapp = Settings(self, page, __file__)
         self.wait_window(sapp)
         sapp.mainloop()
         

@@ -1,10 +1,10 @@
-import os, sys
+import sys, subprocess
+from pathlib import Path
 
-def re():
-    print("sys.executable =", sys.executable)
-    print("sys.argv =", sys.argv)
+def re(mainScript):
+    pythonw = str(Path(sys.executable).with_name("pythonw.exe"))
     if getattr(sys, 'frozen', False):
-        os.execl(sys.executable, sys.executable)
+        subprocess.Popen([pythonw])
     else:
-        script = os.path.abspath(sys.argv[0])
-        os.execl(sys.executable, (sys.executable, script))
+        subprocess.Popen([pythonw, str(mainScript)])
+    sys.exit()

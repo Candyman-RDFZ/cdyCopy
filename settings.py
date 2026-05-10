@@ -5,12 +5,14 @@ from core.loader import getConfig as g
 from core.writer import writeConfig as w
 from core.restart import re
 
-startup = startupManager('EasyCopy')
-
 class Settings(tk.Toplevel):
-    def __init__(self, parent, defaultPage):
+    def __init__(self, parent, defaultPage, mainScript):
         super().__init__(parent)
 
+        self.mainScript = mainScript
+        self.startup = startupManager('EasyCopy', mainScript)
+
+        self.parent = parent
         self.title('Settings')
         self.transient(parent)
         self.resizable(False, False)
@@ -94,10 +96,10 @@ class Settings(tk.Toplevel):
     
     def ok(self):
         if self.runOnStartupVar.get():
-            startup.enable()
+            self.startup.enable()
             w('General', 'runOnStartup', 1)
         else:
-            startup.disable()
+            self.startup.disable()
             w('General', 'runOnStartup', 0)
         
         if self.runMinimizedVar.get():
@@ -108,4 +110,5 @@ class Settings(tk.Toplevel):
         relaunch = messagebox.askyesno('Warning', 'The app needs to restart to apply some settings. Do you want to restart now?', icon='warning')
         self.destroy()
         if relaunch:
-            re()
+            self.parent.destroy()
+            re(self.mainScript)
