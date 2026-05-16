@@ -1,7 +1,0 @@
-v1.0.0 -- 2026/4/25
-
-+ first release of EasyCopy
-
-v1.0.1 -- 2026/4/26
-
-* updated the icon file
