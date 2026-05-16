@@ -36,8 +36,8 @@ class Settings(tk.Toplevel):
 
         style = ttk.Style()
 
-        style.configure('OK.TButton', font=('Arial', 11))
-        style.configure('TNotebook.Tab', background='#ffffff', foreground='black', padding=(PADDING // 5, PADDING // 5), font=('Arial', 11))
+        style.configure('OK.TButton', font=('Arial', 10))
+        style.configure('TNotebook.Tab', background='#ffffff', foreground='black', padding=(PADDING // 5, PADDING // 5), font=('Arial', 10))
         style.map('TNotebook.Tab', background=[('selected', "#ffffff")], foreground=[('selected', 'black')], focuscolor=[('selected', '')])
         style.configure('NB.TFrame', background='white')
         style.configure('TCheckbutton', background='white')
@@ -64,13 +64,13 @@ class Settings(tk.Toplevel):
         self.buttonFrame.columnconfigure(1, weight=1)
 
         self.okButton = ttk.Button(self.buttonFrame, text='OK', style='OK.TButton', command=self.ok)
-        self.okButton.grid(row=0, column=1, ipady=PADDING // 5, sticky='e')
+        self.okButton.grid(row=0, column=1, pady=PADDING // 3, ipady=PADDING // 5, sticky='e')
 
         self.cancelButton = ttk.Button(self.buttonFrame, text='Cancel', command=self.destroy, style='OK.TButton')
-        self.cancelButton.grid(row=0, column=2, padx=(PADDING // 3, PADDING // 2), ipady=PADDING // 5, sticky='e')
+        self.cancelButton.grid(row=0, column=2, pady=PADDING // 3, padx=(PADDING // 3, PADDING // 2), ipady=PADDING // 5, sticky='e')
 
         self.helpButton = ttk.Button(self.buttonFrame, text='Help', style='OK.TButton')
-        self.helpButton.grid(row=0, column=0, padx=PADDING // 2, ipady=PADDING // 5, sticky='w')
+        self.helpButton.grid(row=0, column=0, pady=PADDING // 3, padx=PADDING // 2, ipady=PADDING // 5, sticky='w')
 
         self.general.columnconfigure(0, weight=1)
         self.runFrameTitle = tk.Label(self.general, text='Run', bg='white')
