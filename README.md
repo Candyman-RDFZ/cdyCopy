@@ -15,6 +15,7 @@ Download the executable in the releases area and follow the steps to complete th
 Run (provided you have [Git](https://git-scm.com) and [Python](https://python.org) installed):
 ```
 > git clone https://github.com/Candyman-RDFZ/cdyCopy.git
+> cd cdyCopy
 > pip install -r requirements.txt
 > python3 cdyCopy/main.py
 ```
