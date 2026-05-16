@@ -242,7 +242,7 @@ class App(TkinterDnD.Tk):
     
     def open_settings(self, page):
         sapp = Settings(self, page, __file__)
-        self.wait_window(sapp)
+        #self.wait_window(sapp)
         sapp.mainloop()
         
 app = App()

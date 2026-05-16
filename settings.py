@@ -14,6 +14,7 @@ class Settings(tk.Toplevel):
         self.config = Configuration(Path(mainScript).with_name('config.ini'))
 
         self.parent = parent
+        self.parent.update_idletasks()
         self.title('Settings')
         self.transient(parent)
         self.resizable(False, False)
@@ -37,7 +38,7 @@ class Settings(tk.Toplevel):
 
         style.configure('OK.TButton', font=('Arial', 11))
         style.configure('TNotebook.Tab', background='#ffffff', foreground='black', padding=(PADDING // 5, PADDING // 5), font=('Arial', 11))
-        style.map('TNotebook.Tab', background=[('selected', "#ec1eff")], foreground=[('selected', 'black')], focuscolor=[('selected', '')])
+        style.map('TNotebook.Tab', background=[('selected', "#ffffff")], foreground=[('selected', 'black')], focuscolor=[('selected', '')])
         style.configure('NB.TFrame', background='white')
         style.configure('TCheckbutton', background='white')
 
